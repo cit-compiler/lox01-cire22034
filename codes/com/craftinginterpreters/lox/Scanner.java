@@ -175,9 +175,17 @@ private void number() {
   }
 
   private void string() {
-    while (peek() != '"' && !isAtEnd()) {
-      if (peek() == '\n') line++;
-      advance();
+    while (!isAtEnd()) {
+      if (peek() == '\n') line++; 
+  
+      if (peek() == '\\' && peekNext() == '"') {
+        advance(); 
+        advance(); 
+      } else if (peek() == '"') {
+        break;
+      } else {
+        advance();
+      }
     }
 
     if (isAtEnd()) {
@@ -190,8 +198,9 @@ private void number() {
 
     // Trim the surrounding quotes.
     String value = source.substring(start + 1, current - 1);
-    addToken(STRING, value);
+    addToken(STRING, value.replace("\\\"","\""));
   }
+
 
   private boolean isDigit(char c) {
     return c >= '0' && c <= '9';
